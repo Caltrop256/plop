@@ -31,7 +31,10 @@ _Bool VARPREF(attempt)(Element *el, Cell *cell, Cell *target) {
             freeCell(target);
             explode(target->x, target->y, 40);
             break;
-
+        case SAND :
+            freeCell(target);
+            spawnElement(target, GLASS);
+            break;
         default : 
             if(info->state == s_GAS || info->state == s_PLASMA) {
                 freeCell(target);
