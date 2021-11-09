@@ -381,7 +381,7 @@ window.constructUI = (renderList) => {
     const plopNode = new TextNode('plop 1.0', scaleF, new Vec2(left + 8, bottom + 4 * scaleF));
     plopNode.on('mouseenter', () => document.body.style.cursor = 'pointer');
     plopNode.on('mouseexit', () => document.body.style.cursor = 'default');
-    plopNode.on('mousedown', () => window.open('https://github.com/Caltrop256/plop/'));
+    plopNode.on('mousedown', () => window.open('https://github.com/Caltrop256/plop'));
     renderList.push(plopNode);
     const caltropDevNode = new TextNode('caltrop.dev', scaleF, new Vec2(right - 8, bottom + 4 * scaleF), 'right');
     caltropDevNode.on('mouseenter', () => document.body.style.cursor = 'pointer');
