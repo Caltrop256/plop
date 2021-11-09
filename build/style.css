@@ -1,0 +1,36 @@
+html {
+	background-color: black;
+}
+
+body {
+    overscroll-behavior: contain;
+}
+
+canvas {
+	image-rendering: -moz-crisp-edges;
+	image-rendering: -webkit-crisp-edges;
+	image-rendering: pixelated;
+	image-rendering: crisp-edges;
+}
+
+
+.sim-canvas {
+	background-color: black;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(calc(-50% + 14px), -50%);
+	width: calc(100vw - 32px);
+	height: calc(100vh - 64px);
+	max-width: calc(100vh - 64px);
+	max-height: calc(100vw - 32px);
+	z-index: -1;
+}
+
+.ui-canvas {
+	background-color: transparent;
+	position: absolute;
+	top: 0px;
+	left: 0px;
+	mix-blend-mode: difference;
+}

@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <style>
+        body {
+            display: flex;
+        }
+        canvas {
+            width: 900px;
+            height: 900px;
+        }
+
+        textarea {
+            width: 700px;
+            display: blocK;
+        }
+    </style>
+    <canvas id="c"></canvas>
+    <div>
+        <textarea id="textarea" rows="20" style="width: 700px"></textarea>
+        <textarea id="connections" rows="20" style="width: 700px"></textarea>
+    </div>
+    <script>
+        const canvas = document.getElementById('c');
+        const textarea = document.getElementById('textarea');
+        const conTextarea = document.getElementById('connections');
+
+        const padding = 0;
+        const rN = 10;
+        const N = 1000;
+        const diff = N/ rN;
+
+        canvas.width = N + padding * 2;
+        canvas.height = N + padding * 2;
+        const ctx = canvas.getContext('2d');
+
+        function line(x0, y0, x1, y1) {
+            x0 += padding;
+            y0 += padding;
+            x1 += padding;
+            y1 += padding;
+            ctx.beginPath();
+            ctx.moveTo(x0, y0);
+            ctx.lineTo(x1, y1);
+            ctx.closePath();
+            ctx.stroke();
+        }
+
+        function curve(x0, y0, x1, y1, cx, cy) {
+            x0 += padding;
+            y0 += padding;
+            x1 += padding;
+            y1 += padding;
+            cx += padding;
+            cy += padding;
+            ctx.beginPath();
+            ctx.moveTo(x0, y0);
+            ctx.quadraticCurveTo(cx, cy, x1, y1);
+            ctx.stroke();
+            ctx.closePath();
+        }
+
+        function circle(x, y, color) {
+            x += padding;
+            y += padding;
+            ctx.beginPath();
+            ctx.arc(x, y, 16, 0, Math.PI * 2);
+            ctx.closePath();
+            ctx.fillStyle = color;
+            ctx.fill();
+        }
+
+        const points = [
+            5, 5,
+            10, 10,
+
+            10, 5
+        ]
+
+        const connections = [
+            [0, 1, 2]
+        ]
+
+        const vecs = [];
+
+        function createVecs() {
+            vecs.length = 0;
+            let j = 0;
+            for(let i = 0; i < points.length; i += 2) {
+                vecs[j++] = [points[i] * diff, points[i + 1] * diff];
+            }
+        }
+
+        function createPoints() {
+            points.length = 0;
+            for(let i = 0; i < vecs.length; ++i) {
+                points.push(vecs[i][0] / diff, vecs[i][1] / diff);
+            }
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for(let i = 0; i <= N; i += diff) {
+                ctx.globalAlpha = 0.3;
+                line(0, i, N, i);
+                line(i, 0, i, N);
+                ctx.globalAlpha = 1;
+            }
+
+            createVecs();
+
+            for(let i = 0; i < connections.length; ++i) {
+                circle(...vecs[connections[i][0]], 'red');
+                circle(...vecs[connections[i][1]], 'red');
+                if(connections[i].length == 3) {
+                    curve(...vecs[connections[i][0]], ...vecs[connections[i][1]], ...vecs[connections[i][2]]);
+                    circle(...vecs[connections[i][2]], 'cyan');
+                } else {
+                    line(...vecs[connections[i][0]], ...vecs[connections[i][1]]);
+                }
+            }
+        }
+        function updateTextArea() {
+            textarea.value = `
+        ${vecs.map(a => a.map(n => n / diff).join(', ')).join(',\n\t')}
+            `
+            conTextarea.value = `
+        ${connections.map(a => '[' + a.join(', ') + ']').join(',\n\t')}
+            `
+        }
+        textarea.onchange = () => {
+            const vals = JSON.parse('[' + textarea.value + ']');
+            points.length = 0;
+            for(let i = 0; i < vals.length; ++i) {
+                points[i] = vals[i];
+            }
+            createVecs();
+            draw();
+            updateTextArea();
+        }
+        conTextarea.onchange = () => {
+            const vals = JSON.parse('[' + conTextarea.value + ']');
+            connections.length = 0;
+            for(let i = 0; i < vals.length; ++i) {
+                connections[i] = vals[i];
+            }
+            draw();
+            updateTextArea();
+        }
+
+        draw();
+        updateTextArea();
+
+        function ev2coords(e) {
+            const {left, top, width, height} = canvas.getBoundingClientRect();
+            return {
+                x: ((e.clientX - padding - left) / (width - padding * 2) * N) | 0,
+                y: ((e.clientY - padding - top) / (height - padding * 2) * N) | 0
+            }
+        }
+
+        let vecId = null;
+
+        window.addEventListener('mousedown', e => {
+            const {x,y} = ev2coords(e);
+            console.log(x,y);
+            for(let i = 0; i < vecs.length; ++i) {
+                const [px, py] = vecs[i];
+                if((px - x) ** 2 + (py - y) ** 2 < 16 * 16) {
+                    vecId = i;
+                }
+            }
+        })
+
+        window.addEventListener('mouseup', () => vecId = null);
+
+        window.addEventListener('mousemove', e => {
+            if(vecId != null) {
+                const {x,y} = ev2coords(e);
+                vecs[vecId][0] = x;
+                vecs[vecId][1] = y;
+                createPoints();
+                updateTextArea();
+                draw();
+            }
+        })
+    </script>
+</body>
+</html>
