@@ -401,7 +401,11 @@ window.constructUI = (renderList) => {
         [3, 0]
     ], 1);
     const genEl = new Element(new Vec2());
-    genEl.draw = ctx => border.drawAt(ctx, new Vec2());
+    genEl.draw = ctx => {
+        if(paused) ctx.strokeStyle = '#ff0000';
+        border.drawAt(ctx, new Vec2());
+        ctx.strokeStyle = '#ffffff';
+    }
     renderList.push(genEl);
 
     renderList[Element.getElementIndexById('cat_' + categorySelected)].clr = toolColors[0];
