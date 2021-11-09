@@ -3,8 +3,6 @@
 #include "../walloc.h"
 #include "../fluidsim.h"
 
-export const char helloworldstr[] = {72, 101, 108, 108, 111, 32, 87, 111, 114, 108, 100, 33, 0};
-
 export const char *enumToString[] = {
     #define GENERATE_STRING(UPPER,LOWER) #UPPER,
     FOREACH_ELEMENTTYPE(GENERATE_STRING)
