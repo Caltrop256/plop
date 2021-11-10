@@ -103,6 +103,7 @@ void tickSubatomics(void) {
                 case ELECTRON :
                 case PHOTON :
                 case PROTON :
+                case DEBRIS :
                 case EMPTY : break;
             }
         } else {
