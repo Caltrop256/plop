@@ -13,7 +13,7 @@ void VARPREF(update)(Element *el, Cell *cell, U16 x, U16 y) {
             return;
         }
 
-        APPROACHIFMORE(fluid->vy[cell->fluidInd], -10.0f, 0.6);
+        APPROACHIFMORE(fluid.vy[cell->fluidInd], -10.0f, 0.6);
 
         if(randEveryU8(255)) {
             freeCell(cell);

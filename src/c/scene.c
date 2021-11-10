@@ -30,7 +30,7 @@ void snow_scene(void) {
     while(i --> 0) {
         Cell *target = &cells[i];
         if(getType(target) != EMPTY) freeCell(target);
-        fluid->density[target->fluidInd] = -4.0f;
+        fluid.density[target->fluidInd] = -4.0f;
 
         if(target->y >= height - 100 && randEveryU8(4)) spawnElement(target, target->y >= height - 50 ? DIRT : SNOW);
         if(target->y < 30 && randEveryU8(4)) {
@@ -81,7 +81,7 @@ void mountain_scene(void) {
             Cell *target = &cells[x + y * width];
             U16 diff = y - oy;
 
-            if(y < 300) fluid->density[target->fluidInd] = -5.0f;
+            if(y < 300) fluid.density[target->fluidInd] = -5.0f;
 
             if(diff < 8) {
                 spawnElement(target, y >= 280 ? DIRT : SNOW);

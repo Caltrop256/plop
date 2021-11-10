@@ -23,7 +23,7 @@ void VARPREF(update)(Element *el, Cell *cell, U16 x, U16 y) {
             elementLookup[target->el->type].conductive
         ) {
             target->el->electricityState += 1;
-            fluid->density[cell->fluidInd] += 2;
+            fluid.density[cell->fluidInd] += 2;
         }
     }
 

@@ -125,7 +125,6 @@ void advect(U8 b, F32 *d, F32 *d0, F32 *velocX, F32 *velocY, F32 dt) {
         int j0i = (int)(j0);
         int j1i = (int)(j1);
 
-        // F64 CHECK THIS!!!
         d[IX(i, j)] = 
             s0 * (t0 * d0[IX(i0i, j0i)] + t1 * d0[IX(i0i, j1i)]) +
             s1 * (t0 * d0[IX(i1i, j0i)] + t1 * d0[IX(i1i, j1i)]);
@@ -135,39 +134,19 @@ void advect(U8 b, F32 *d, F32 *d0, F32 *velocX, F32 *velocY, F32 dt) {
     set_bnd(b, d);
 }
 
-FluidSim *initFluid(F32 diffusion, F32 viscosity, F32 dt) {
-    FluidSim *fluid = malloc(sizeof(*fluid));
+void stepFluid(void) {    
+    diffuse(1, fluid.vx0, fluid.vx, fluid.visc, fluid.dt);
+    diffuse(2, fluid.vy0, fluid.vy, fluid.visc, fluid.dt);
 
-    fluid->dt = dt;
-    fluid->diff = diffusion;
-    fluid->visc = viscosity;
+    project(fluid.vx0, fluid.vy0, fluid.vx, fluid.vy);
 
-    fluid->s = malloc(N * N * sizeof(F32));
-    fluid->density = malloc(N * N * sizeof(F32));
-    fluid->prevDensity = malloc(N * N * sizeof(F32));
+    advect(1, fluid.vx, fluid.vx0, fluid.vx0, fluid.vy0, fluid.dt);
+    advect(2, fluid.vy, fluid.vy0, fluid.vx0, fluid.vy0, fluid.dt);
 
-    fluid->vx = malloc(N * N * sizeof(F32));
-    fluid->vy = malloc(N * N * sizeof(F32));
+    project(fluid.vx, fluid.vy, fluid.vx0, fluid.vy0);
 
-    fluid->vx0 = malloc(N * N * sizeof(F32));
-    fluid->vy0 = malloc(N * N * sizeof(F32));
-    return fluid;
+    diffuse(0, fluid.s, fluid.density, fluid.diff, fluid.dt);
+    advect(0, fluid.density, fluid.s, fluid.vx, fluid.vy, fluid.dt);
 }
 
-void stepFluid(void) {
-    U32 i = N * N;
-    while(i --> 0) fluid->prevDensity[i] = fluid->density[i];
-    
-    diffuse(1, fluid->vx0, fluid->vx, fluid->visc, fluid->dt);
-    diffuse(2, fluid->vy0, fluid->vy, fluid->visc, fluid->dt);
-
-    project(fluid->vx0, fluid->vy0, fluid->vx, fluid->vy);
-
-    advect(1, fluid->vx, fluid->vx0, fluid->vx0, fluid->vy0, fluid->dt);
-    advect(2, fluid->vy, fluid->vy0, fluid->vx0, fluid->vy0, fluid->dt);
-
-    project(fluid->vx, fluid->vy, fluid->vx0, fluid->vy0);
-
-    diffuse(0, fluid->s, fluid->density, fluid->diff, fluid->dt);
-    advect(0, fluid->density, fluid->s, fluid->vx, fluid->vy, fluid->dt);
-}
+FluidSim fluid;

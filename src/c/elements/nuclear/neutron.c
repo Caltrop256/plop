@@ -25,7 +25,7 @@ _Bool VARPREF(attempt)(Element *el, Cell *cell, Cell *target) {
             explode(target->x, target->y, 30);
             return 0;
         }
-        case POLONIUM : fluid->density[cell->fluidInd] += 5.5f; break;
+        case POLONIUM : fluid.density[cell->fluidInd] += 5.5f; break;
     }
     #undef REPLACEWITH
     if(target && randEveryU8(25)) {

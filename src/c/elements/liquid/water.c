@@ -66,7 +66,7 @@ void VARPREF(update)(Element *el, Cell *cell, U16 x, U16 y) {
     } else {
         ElementInfo *self = &elementLookup[el->type];
 
-        APPROACHIFMORE(fluid->density[cell->fluidInd], 5.5f, 0.99);
+        APPROACHIFMORE(fluid.density[cell->fluidInd], 5.5f, 0.99);
 
         if(!attempt_water(el, cell, getCell(x, y + 1))) {
             if(cell->el->type == WATER) moveHorizontally(cell, (randomU8() % self->liquid.dispersion + 1) * LORDIR, self->attempt);

@@ -20,9 +20,9 @@ U8 FSCALE;
 export void changeScene(U8 scene) {
     U32 fi = N * N;
     while(fi-->0) {
-        fluid->density[fi] = 5.0f;
-        fluid->vx[fi] = 0.0f;
-        fluid->vy[fi] = 0.0f;
+        fluid.density[fi] = 5.0f;
+        fluid.vx[fi] = 0.0f;
+        fluid.vy[fi] = 0.0f;
     }
     if(rootSA) {
         for(Subatomic *node = rootSA, *prev = NULL; node->next; prev = node, node = node->next) {
@@ -44,7 +44,9 @@ export void setSize(U16 w, U16 h) {
         free(cells);
         free(imageData);
     } else {
-        fluid = initFluid(0.1, 0.000000000002, 0.0005);
+        fluid.dt = 0.0005f;
+        fluid.diff = 0.1f;
+        fluid.visc = 0.000000000002f;
         setup_cells();
     }
     
@@ -100,10 +102,10 @@ export void setSize(U16 w, U16 h) {
 void tickCell(Cell *cell) {
     ElementType type = cell->el == NULL ? EMPTY : cell->el->type;
 
-    APPROACH(cell->temperature, fluid->density[cell->fluidNodes[3]], cell->fluidNodeWeights[3]);
-    APPROACH(cell->temperature, fluid->density[cell->fluidNodes[2]], cell->fluidNodeWeights[2]);
-    APPROACH(cell->temperature, fluid->density[cell->fluidNodes[1]], cell->fluidNodeWeights[1]);
-    APPROACH(cell->temperature, fluid->density[cell->fluidNodes[0]], cell->fluidNodeWeights[0]);
+    APPROACH(cell->temperature, fluid.density[cell->fluidNodes[3]], cell->fluidNodeWeights[3]);
+    APPROACH(cell->temperature, fluid.density[cell->fluidNodes[2]], cell->fluidNodeWeights[2]);
+    APPROACH(cell->temperature, fluid.density[cell->fluidNodes[1]], cell->fluidNodeWeights[1]);
+    APPROACH(cell->temperature, fluid.density[cell->fluidNodes[0]], cell->fluidNodeWeights[0]);
 
     if(type > EMPTY)  {
         if(cell->el->tick != g_tick) return;
@@ -128,8 +130,8 @@ void tickCell(Cell *cell) {
             } else el->electricityState += 1;
         }
 
-        F32 fvx = fluid->vx[cell->fluidInd];
-        F32 fvy = fluid->vy[cell->fluidInd];
+        F32 fvx = fluid.vx[cell->fluidInd];
+        F32 fvy = fluid.vy[cell->fluidInd];
 
         if(info->state != s_UNKNOWN && fvx * fvx + fvy * fvy >= info->weight * info->weight) {
             cell->el->sbpx += fvx - (info->weight * SIGN(fvx));
@@ -137,8 +139,8 @@ void tickCell(Cell *cell) {
         }
 
         if(info->weight) {
-            fluid->vx[cell->fluidInd] -= info->weight * SIGN(fvx) * 0.0002;
-            fluid->vy[cell->fluidInd] -= info->weight * SIGN(fvy) * 0.0002;
+            fluid.vx[cell->fluidInd] -= info->weight * SIGN(fvx) * 0.0002;
+            fluid.vy[cell->fluidInd] -= info->weight * SIGN(fvy) * 0.0002;
         }
 
         I16 mx = 0, my = 0;
@@ -174,14 +176,14 @@ void tickCell(Cell *cell) {
             I8 dirX = cell->x - sx;
             I8 dirY = cell->y - sy;
             if(dirX > 0) {
-                APPROACHIFLESS(fluid->vx[cell->fluidInd], info->weight * 1.1, 1 / (dirX));
+                APPROACHIFLESS(fluid.vx[cell->fluidInd], info->weight * 1.1, 1 / (dirX));
             } else if(dirX < 0) {
-                APPROACHIFMORE(fluid->vx[cell->fluidInd], info->weight * -1.1, 1 / -(dirX));
+                APPROACHIFMORE(fluid.vx[cell->fluidInd], info->weight * -1.1, 1 / -(dirX));
             }
             if(dirY > 0) {
-                APPROACHIFLESS(fluid->vy[cell->fluidInd], info->weight * 1.1, 1 / (dirY));
+                APPROACHIFLESS(fluid.vy[cell->fluidInd], info->weight * 1.1, 1 / (dirY));
             } else if(dirY < 0) {
-                APPROACHIFMORE(fluid->vy[cell->fluidInd], info->weight * -1.1, 1 / -(dirY));
+                APPROACHIFMORE(fluid.vy[cell->fluidInd], info->weight * -1.1, 1 / -(dirY));
             }
         }
 
@@ -200,10 +202,10 @@ void tickCell(Cell *cell) {
             }  
         }
 
-        APPROACHIFMORE(fluid->density[cell->fluidInd], cell->temperature, 1 - (info->temp.insolation));
+        APPROACHIFMORE(fluid.density[cell->fluidInd], cell->temperature, 1 - (info->temp.insolation));
     } else {
         if(cell->x == 0 || cell->y == 0 || cell->x == width - 1 || cell->y == height - 1) {
-            APPROACH(fluid->density[cell->fluidInd], 5.0f, 0.999);
+            APPROACH(fluid.density[cell->fluidInd], 5.0f, 0.999);
         }
     }
 }
@@ -287,8 +289,8 @@ export void draw() {
     i = 0;
     for(U16 y = 0; y < height; ++y) {
         for(U16 x = 0; x < width; ++x) {
-            F32 fvx = fluid->vx[cells[i].fluidInd] * 0.5;
-            F32 fvy = fluid->vy[cells[i].fluidInd] * 0.5;
+            F32 fvx = fluid.vx[cells[i].fluidInd] * 0.5;
+            F32 fvy = fluid.vy[cells[i].fluidInd] * 0.5;
 
             if((ABS(fvx) >= 1 || ABS(fvy) >= 1) && x % 10 == 0 && y % 10 == 0) {
                 U8 val = MIN(255, (fvx * fvx + fvy * fvy));

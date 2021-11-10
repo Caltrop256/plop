@@ -29,7 +29,7 @@ _Bool VARPREF(attempt)(Element *el, Cell *cell, Cell *target) {
 }
 
 void VARPREF(update)(Element *el, Cell *cell, U16 x, U16 y) {
-    APPROACHIFMORE(fluid->density[cell->fluidInd], -2.3f, 0.99);
+    APPROACHIFMORE(fluid.density[cell->fluidInd], -2.3f, 0.99);
     if(cell->temperature >= 3.6f) {
         freeCell(cell);
         spawnElement(cell, WATER);

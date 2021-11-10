@@ -11,13 +11,14 @@ _Bool VARPREF(attempt)(Element *el, Cell *cell, Cell *target) {
 }
 
 void VARPREF(update)(Element *el, Cell *cell, U16 x, U16 y) {
-    APPROACHIFMORE(fluid->density[cell->fluidInd], -5.1f, 0.98);
+    APPROACHIFMORE(fluid.density[cell->fluidInd], -5.1f, 0.98);
     if(cell->temperature >= 0.6f) {
         freeCell(cell);
         spawnElement(cell, WATER);
         return;
     }
 }
+// TODO: add init function to set temperature
 
 ElementInfo VARPOST(info) = {
     .handler = VARPREF(update),

@@ -92,7 +92,7 @@ void tickSubatomics(void) {
 
                     if(randEveryU32(1024)) cell->el->r0 = randomU8();
                     if(randEveryU32(1024)) cell->el->rv = randomU8();
-                    fluid->density[cell->fluidInd] += 0.1f;
+                    fluid.density[cell->fluidInd] += 0.1f;
                     break;
                 case VOID : 
                     goto DELETE_PARTICLE;
@@ -114,7 +114,7 @@ void tickSubatomics(void) {
                     if(!cell->el->r0) cell->el->r0 = PROTON;
                     goto DELETE_PARTICLE;
                 default :
-                    fluid->density[cell->fluidInd] += 4.0f;
+                    fluid.density[cell->fluidInd] += 4.0f;
                     if(randEveryU32(1024)) {
                         createSubatomicHelper(cell->x, cell->y, 0xff, randomU8());
                         goto DELETE_PARTICLE;

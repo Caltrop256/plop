@@ -6,8 +6,6 @@
 
 #define ELEMENT_NAME fire
 
-FluidSim *fluid;
-
 _Bool VARPREF(attempt)(Element *el, Cell *cell, Cell *target) {
     ElementInfo *info;
     switch(getType(target)) {
@@ -32,8 +30,8 @@ void VARPREF(update)(Element *el, Cell *cell, U16 x, U16 y) {
     }
     el->rv -= 1;
 
-    APPROACHIFLESS(fluid->density[cell->fluidInd], 120.0f, 0.4f);
-    APPROACHIFMORE(fluid->vy[cell->fluidInd], -1.3f, 0.4f);
+    APPROACHIFLESS(fluid.density[cell->fluidInd], 120.0f, 0.4f);
+    APPROACHIFMORE(fluid.vy[cell->fluidInd], -1.3f, 0.4f);
 
     attempt_fire(el, cell, getCell(x + RANDDIR, y + RANDDIR));
 }

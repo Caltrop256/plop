@@ -8,7 +8,7 @@
 
 void VARPREF(update)(Element *el, Cell *cell, U16 x, U16 y) {
     if(el->electricityState == 1) {
-        APPROACHIFLESS(fluid->density[cell->fluidInd], 600.0f, 0.999);
+        APPROACHIFLESS(fluid.density[cell->fluidInd], 600.0f, 0.999);
         Cell *target = getCell(x, y - 1);
         if(getType(target) == EMPTY) spawnElement(target, FIRE);
     }

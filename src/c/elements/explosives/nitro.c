@@ -39,8 +39,8 @@ _Bool VARPREF(attempt)(Element *el, Cell *cell, Cell *target) {
 }
 
 void VARPREF(update)(Element *el, Cell *cell, U16 x, U16 y) {
-    F32 fvx = fluid->vx[cell->fluidInd];
-    F32 fvy = fluid->vy[cell->fluidInd];
+    F32 fvx = fluid.vx[cell->fluidInd];
+    F32 fvy = fluid.vy[cell->fluidInd];
     if(el->r0 || fvx * fvx + fvy * fvy >= 10 * 10) {
         freeCell(cell);
         explode(x, y, el->rv % 40);

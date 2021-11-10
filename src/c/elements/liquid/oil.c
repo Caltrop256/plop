@@ -49,7 +49,7 @@ void VARPREF(update)(Element *el, Cell *cell, U16 x, U16 y) {
             if(n[i] && !n[i]->el && randEveryU8(6)) {
                 spawnElement(n[i], SMOKE);
                 n[i]->el->rv = 0xff;
-                fluid->vy[n[i]->fluidInd] -= 1;
+                fluid.vy[n[i]->fluidInd] -= 1;
             }
         }
     }

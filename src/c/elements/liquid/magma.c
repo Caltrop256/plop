@@ -49,7 +49,7 @@ void VARPREF(update)(Element *el, Cell *cell, U16 x, U16 y) {
             return;
         }
     }
-    APPROACHIFLESS(fluid->density[cell->fluidInd], 1000.0f, 0.95);
+    APPROACHIFLESS(fluid.density[cell->fluidInd], 1000.0f, 0.95);
     
     if(randomBool()) update_liquid(cell);
     if(randEveryU8(40)) {

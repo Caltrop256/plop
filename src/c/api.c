@@ -10,8 +10,8 @@ export F32 getTemp(U16 x, U16 y) {
 export void fluidVelocity(U16 x, U16 y, F32 vx, F32 vy) {
     Cell *target = getCell(x, y);
     if(target) {
-        fluid->vx[target->fluidInd] += vx;
-        fluid->vy[target->fluidInd] += vy;
+        fluid.vx[target->fluidInd] += vx;
+        fluid.vy[target->fluidInd] += vy;
     }
 }
 

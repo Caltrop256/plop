@@ -9,8 +9,8 @@
 void VARPREF(update)(Element *el, Cell *cell, U16 x, U16 y) {
     if(!el->r0) {
         el->rv -= 1;
-        F32 fvx = fluid->vx[cell->fluidInd];
-        F32 fvy = fluid->vy[cell->fluidInd];
+        F32 fvx = fluid.vx[cell->fluidInd];
+        F32 fvy = fluid.vy[cell->fluidInd];
         if((el->rv == 0 && randEveryU8(14)) || (fvx * fvx + fvy * fvy) >= 6 * 6) {
             freeCell(cell);
             spawnElement(cell, SEED);

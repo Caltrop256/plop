@@ -180,8 +180,8 @@ void explosionRay(U16 x0, U16 y0, I16 x1, I16 y1, U8 power) {
     for(;;) {
         Cell *source = &cells[y0 * width + x0];
         if(curPower) {
-            fluid->vx[source->fluidInd] += (x1 - x0) * 0.05;
-            fluid->vy[source->fluidInd] += (y1 - y0) * 0.05;
+            fluid.vx[source->fluidInd] += (x1 - x0) * 0.05;
+            fluid.vy[source->fluidInd] += (y1 - y0) * 0.05;
             if(source->el) {
                 ElementType type = source->el->type;
                 ElementInfo *info = &elementLookup[type];
@@ -300,7 +300,7 @@ void update_flammable(Cell *c) {
         el->rv -= 1;
         if(el->rv == 0) el->r0 -= 1;
 
-        APPROACHIFLESS(fluid->density[c->fluidInd], self->temp.burnTemperature, 0.4);
+        APPROACHIFLESS(fluid.density[c->fluidInd], self->temp.burnTemperature, 0.4);
 
         if(randEveryU8(4)) {
             Cell *target = getCell(c->x + RANDDIR, c->y + RANDDIR);
