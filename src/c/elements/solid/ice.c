@@ -18,7 +18,6 @@ void VARPREF(update)(Element *el, Cell *cell, U16 x, U16 y) {
         return;
     }
 }
-// TODO: add init function to set temperature
 
 ElementInfo VARPOST(info) = {
     .handler = VARPREF(update),
