@@ -85,9 +85,12 @@ class EventHandler {
                     'l': 'tool_line',
                     'w': 'tool_wind',
                     ' ': 'control_pause',
-                    's': 'control_step',
+                    '.': 'control_step',
                     'r': 'control_reset',
-                    'c': 'control_resize'
+                    'c': 'control_resize',
+
+                    'a': 'control_save state',
+                    's': 'control_load state'
                 }[e.key.toLowerCase()];
                 if(id) {
                     const ind = Element.getElementIndexById(id);
@@ -99,6 +102,19 @@ class EventHandler {
         window.addEventListener('wheel', e => {
             renderList[Element.getElementIndexById('tool_areaOfEffect')].onmousedown({button: e.deltaY < 0 ? 0 : 2});
         });
+        window.addEventListener('dragover', e => e.preventDefault())
+        window.addEventListener('drop', e => {
+            e.preventDefault();
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                const res = reader.result;
+                if(new Uint16Array(res, 0, 1) == 0xB00B) {
+                    state = new Uint8Array(res);
+                    importData(state);
+                }
+            }
+            reader.readAsArrayBuffer(e.dataTransfer.files[0]);
+        })
     }
 
     inCanvas() {

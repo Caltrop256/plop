@@ -28,6 +28,8 @@ typedef double      F64;
 #define RANDDIR (randomU8() % 3 - 1)
 #define LORDIR (randomBool() ? -1 : 1)
 
+void setSize(U16 w, U16 h, _Bool voidScene);
+
 // imported functions
 __attribute__((import_module("env"), import_name("log"))) void env_log();
 __attribute__((import_module("env"), import_name("cos"))) double env_cos(double);

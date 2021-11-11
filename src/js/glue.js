@@ -10,6 +10,8 @@ let elementInBrush;
 let paused = false;
 let categorySelected = 'brittle';
 
+let state = null;
+
 function setSize(n) {
     canvas.width = 75 * n;
     canvas.height = 75 * n;
@@ -118,6 +120,56 @@ const controls = [
                 })
                 renderList.push(cancel);
             }
+        }
+    }, {
+        name: 'save state',
+        symbol: '\u0016',
+        callback() {
+            state = exportData();
+        }
+    }, {
+        name: 'load state',
+        symbol: '\u0017',
+        callback() {
+            if(state) importData(state);
+        }
+    }, {
+        name: 'export state',
+        symbol: '\u0018',
+        callback() {
+            if(!state) state = exportData();
+            const blob = new Blob([state]);
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = url;
+            a.download = 'state.plop';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            a.remove();
+        }
+    }, {
+        name: 'import state',
+        symbol: '\u0019',
+        callback() {
+            const inp = document.createElement('input');
+            inp.type = 'file';
+            inp.style.display = 'none';
+            document.body.appendChild(inp);
+            inp.oninput = () => {
+                const reader = new FileReader();
+                reader.onloadend = () => {
+                    const res = reader.result;
+                    if(new Uint16Array(res, 0, 1) == 0xB00B) {
+                        state = new Uint8Array(res);
+                        importData(state);
+                    }
+                }
+                reader.readAsArrayBuffer(inp.files[0]);
+            }
+            inp.click();
+            inp.remove();
         }
     }
 ]
@@ -373,12 +425,13 @@ window.constructUI = (renderList) => {
         renderList.push(controlNode, name);
         controlNode.id = 'control_' + control.name;
         toolY += 21 * scaleF;
+        if(control.name == 'resize') toolY += 21 * scaleF;
     }
 
     infoNode = new TextNode('-1x, -1y, 0.2°C, VOID', scaleF, new Vec2(right - 8, top - 13 * scaleF), 'right');
     renderList.push(infoNode);
 
-    const plopNode = new TextNode('plop 1.0', scaleF, new Vec2(left + 8, bottom + 4 * scaleF));
+    const plopNode = new TextNode('plop', scaleF, new Vec2(left + 8, bottom + 4 * scaleF));
     plopNode.on('mouseenter', () => document.body.style.cursor = 'pointer');
     plopNode.on('mouseexit', () => document.body.style.cursor = 'default');
     plopNode.on('mousedown', () => window.open('https://github.com/Caltrop256/plop'));

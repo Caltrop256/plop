@@ -21,8 +21,7 @@
 // WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
 #include "walloc.h"
-
-#define NULL ((void *) 0)
+#include "main.h"
 
 #define STATIC_ASSERT_EQ(a, b) _Static_assert((a) == (b), "eq")
 
@@ -428,14 +427,14 @@ allocate_large(size_t size) {
   return obj ? get_large_object_payload(obj) : NULL;
 }
   
-void*
+export void*
 malloc(size_t size) {
   size_t granules = size_to_granules(size);
   enum chunk_kind kind = granules_to_chunk_kind(granules);
   return (kind == LARGE_OBJECT) ? allocate_large(size) : allocate_small(kind);
 }
 
-void
+export void
 free(void *ptr) {
   if (!ptr) return;
   struct page *page = get_page(ptr);
