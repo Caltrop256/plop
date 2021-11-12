@@ -160,10 +160,9 @@ const controls = [
             inp.oninput = () => {
                 const reader = new FileReader();
                 reader.onloadend = () => {
-                    const res = reader.result;
-                    if(new Uint16Array(res, 0, 1) == 0xB00B) {
-                        state = new Uint8Array(res);
-                        importData(state);
+                    const res = new Uint8Array(reader.result);
+                    if(importData(res)) {
+                        state = res;
                     }
                 }
                 reader.readAsArrayBuffer(inp.files[0]);

@@ -29,6 +29,7 @@ typedef double      F64;
 #define LORDIR (randomBool() ? -1 : 1)
 
 void setSize(U16 w, U16 h, _Bool voidScene);
+void *memcpy(void *dest, const void *src, unsigned long s);
 
 // imported functions
 __attribute__((import_module("env"), import_name("log"))) void env_log();

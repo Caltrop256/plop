@@ -318,3 +318,10 @@ export void draw() {
         else imageData[ind] |= c[node->waveLength].value;
     }
 }
+
+void *memcpy(void *dest, const void *src, unsigned long s) {
+    char *csrc = (char *)src;
+    char *cdest = (char *)dest;
+    while(s --> 0) cdest[s] = csrc[s];
+    return dest;
+}
