@@ -11,11 +11,11 @@ function exportData() {
         buffer[i] = view[i];
     };
     wasm.exports.free(ptr);
-    return pako.deflateRaw(buffer);
+    return pako.deflate(buffer);
 }
 
 function importData(compressed) {
-    const buffer = pako.inflateRaw(compressed);
+    const buffer = pako.inflate(compressed);
 
     const byteLen = buffer.byteLength;
     const ptr = wasm.exports.malloc(byteLen);
@@ -40,4 +40,22 @@ function importData(compressed) {
         canvas.width, canvas.height
     );
     return true;
+}
+
+function submitState() {
+    state = exportData();
+    fetch('./plopstate.emb', {
+        headers: {
+            'Content-Type': 'application/octet-stream',
+            'Content-Size': state.byteLength
+        },
+        method: 'POST',
+        body: state.buffer
+    }).then(res => {
+        if(res.ok) {
+            res.text().then(id => {
+                history.pushState({}, '', '/plop/' + id + '/');
+            })
+        }
+    })
 }

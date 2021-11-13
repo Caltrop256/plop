@@ -1,0 +1,35 @@
+<?HEAD
+    Content-Type application/octet-stream
+?>
+
+<?em
+    const NodeURL = require('url');
+    const QueryString = require('querystring');
+    const {inflate} = require('pako');
+
+    const method = $.req.method.toUpperCase();
+
+    if(method == 'GET') {
+        const queryData = QueryString.parse(NodeURL.parse($.req.url).query || '');
+        if(typeof queryData.f == 'undefined') return $.responseCode = 404;
+        const file = queryData.f + '.plop';
+        if(!server.fileDB.hasIn('plop', file)) return $.responseCode = 404;
+        const buffer = await server.fileDB.readFrom('plop', file);
+        $(buffer);
+    } else if(method == 'POST') {
+        const buffer = await $.getBody($.req);
+        if(Buffer.byteLength(buffer) >= 1e+7) return $.responseCode = 413;
+        try {
+            const raw = inflate(buffer);
+            const magic = Buffer.from('PLOP :]\0');
+            for(let i = 0; i < 8; ++i) {
+                if(raw[i] != magic[i]) return $.responseCode = 400;
+            }
+        } catch(e) {
+            return $.responseCode = 400;
+        }
+        const id = require('crypto').createHash('md5').update(buffer).digest('base64').replace(/=+$/, '').replace(/\//g, '_').replace(/\+/g, '-') + '.plop';
+        if(!server.fileDB.hasIn('plop', id)) server.fileDB.writeTo('plop', id, buffer);
+        $(Buffer.from(id.substring(0, id.length - 5)));
+    } else $.responseCode = 405;
+?>

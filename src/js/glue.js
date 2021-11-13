@@ -137,7 +137,7 @@ const controls = [
         name: 'export state',
         symbol: '\u0018',
         callback() {
-            if(!state) state = exportData();
+            state = exportData();
             const blob = new Blob([state]);
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
@@ -494,6 +494,18 @@ void async function main() {
         constructUI(renderList);
         wasm.exports.seed(...seed);
         setSize(4);
+        const id = location.pathname.substring(location.pathname.slice(0, -1).lastIndexOf('/') + 1).slice(0, -1);
+        if(id != 'plop') {
+            fetch('./plopstate.emb?f=' + encodeURIComponent(id))
+            .then(res => res.arrayBuffer())
+            .then(buffer => {
+                if(buffer.byteLength) {
+                    const arr = new Uint8Array(buffer);
+                    if(importData(arr)) state = arr;
+                    paused = true;
+                };
+            });
+        }
         loop();
     })
 }();

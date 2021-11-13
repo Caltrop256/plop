@@ -27,4 +27,4 @@ compile:
 		./src/js/io.js \
 		-o ./build/glue.min.js --compress --mangle #--source-map url=glue.min.js.map
 
-	@cp ./src/favicon.png ./src/logo.png ./src/index.html ./src/style.css ./build
+	@cp ./src/static/* ./build
