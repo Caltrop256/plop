@@ -85,7 +85,7 @@ export IOCanvas* exportData(void) {
     U32 i = len;
     U32 ci = 0;
     while(i --> 0) {
-        if(cells[i].el) {
+        if(cells[i].el && cells[i].el->type > EMPTY) {
             canvas->cells[ci].index = i;
             canvas->cells[ci].el.type =               cells[i].el->type;
             canvas->cells[ci].el.rv =                 cells[i].el->rv;
@@ -115,7 +115,9 @@ export _Bool importData(IOCanvas *canvas) {
         if(magic[i] != canvas->magic[i]) return 0;
     }
     for(U32 i = 0; i < canvas->cellLength; ++i) {
-        if(canvas->cells[i].el.type <= EMPTY || canvas->cells[i].el.type >= type_length) return 0;
+        if(canvas->cells[i].el.type >= type_length) {
+            return 0;
+        } 
     }
 
     setSize(canvas->size * 75, canvas->size * 75, 1);
