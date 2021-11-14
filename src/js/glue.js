@@ -242,7 +242,7 @@ const controls = [
                 } else {
                     switch(res.status) {
                         case 400 : alert('You tried to upload an invalid File!'); break;
-                        case 429 : alert('You have hit the rate limit, please wait at least 10 minutes and try again!'); break;
+                        case 429 : alert('You have hit the rate limit, please wait at least 3 minutes and try again!'); break;
                         case 413 : alert('The file you tried to upload exceeds the file-size limit!'); break;
                         default : alert('An Unknown Error has occured, please try again later!'); break;
                     }

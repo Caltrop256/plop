@@ -23,7 +23,7 @@
         const r = {timestamp: Date.now(), bytes: 0};
         if($.static.rates.has(ip)) {
             const state = $.static.rates.get(ip);
-            if(Date.now() - state.timestamp < 60000 * 10) {
+            if(Date.now() - state.timestamp < 60000 * 3) {
                 r.bytes = state.bytes;
             }
         }
