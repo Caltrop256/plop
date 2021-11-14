@@ -109,6 +109,7 @@ void tickSubatomics(void) {
         } else {
             #define COLLISIONLENGTH 7
             ElementType neutronCollision[COLLISIONLENGTH] = {PHOTON, ELECTRON, STEAM, FIRE, WOOD, COBBLESTONE, OIL};
+            ElementType toSpawn;
             switch(getType(cell)) {
                 case UNBREAKABLECLONER :
                 case CLONER :
@@ -124,7 +125,10 @@ void tickSubatomics(void) {
                     break;
                 case NEUTRON :
                     freeCell(cell);
-                    spawnElement(cell, randEveryU8(3) ? neutronCollision[randomU8() % COLLISIONLENGTH] : neutronCollision[(U8)MAX(0, MIN(COLLISIONLENGTH, cell->temperature / 1000.0f * COLLISIONLENGTH))]);
+                    toSpawn =  randEveryU8(3) 
+                        ? neutronCollision[randomU8() % COLLISIONLENGTH] 
+                        : neutronCollision[(U8)MAX(0, MIN(COLLISIONLENGTH - 1, cell->temperature / 1000.0f * COLLISIONLENGTH))];
+                    spawnElement(cell, toSpawn);
                 case VOID : 
                     goto DELETE_PARTICLE;
                 case PROTON :
