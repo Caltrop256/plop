@@ -47,6 +47,7 @@ class LineTool {
     }
 
     applyPaint(mx, my) {
-        wasm.exports.applyPaint(mx, my, elementInBrush, areaOfEffect);
+        if(eventhandler.shiftKeyPressed) wasm.exports.eraseArea(mx, my, areaOfEffect);
+        return wasm.exports.applyPaint(mx, my, elementInBrush, areaOfEffect);
     }
 }

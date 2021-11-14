@@ -6,6 +6,8 @@ class EventHandler {
 
     isPhone = false;
 
+    shiftKeyPressed = false;
+
     constructor() {
         window.addEventListener('contextmenu', e => e.preventDefault());
         window.addEventListener('mousemove', e => {
@@ -86,11 +88,11 @@ class EventHandler {
                     'w': 'tool_wind',
                     ' ': 'control_pause',
                     '.': 'control_step',
-                    'r': 'control_reset',
+                    'a': 'control_reset',
                     'c': 'control_resize',
 
-                    'a': 'control_save state',
-                    's': 'control_load state'
+                    's': 'control_save state',
+                    'r': 'control_load state'
                 }[e.key.toLowerCase()];
                 if(id) {
                     const ind = Element.getElementIndexById(id);
@@ -98,6 +100,9 @@ class EventHandler {
                 }
             }
         });
+
+        window.addEventListener('keydown', e => e.key.toLowerCase() == 'shift' && (this.shiftKeyPressed = true));
+        window.addEventListener('keyup', e => e.key.toLowerCase() == 'shift' && (this.shiftKeyPressed = false));
 
         window.addEventListener('wheel', e => {
             renderList[Element.getElementIndexById('tool_areaOfEffect')].onmousedown({button: e.deltaY < 0 ? 0 : 2});

@@ -24,6 +24,7 @@ class PaintTool {
     }
 
     applyPaint(mx, my) {
+        if(eventhandler.shiftKeyPressed) wasm.exports.eraseArea(mx, my, areaOfEffect);
         return wasm.exports.applyPaint(mx, my, elementInBrush, areaOfEffect);
     }
 }

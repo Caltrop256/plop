@@ -17,8 +17,26 @@
         const buffer = await server.fileDB.readFrom('plop', file);
         $(buffer);
     } else if(method == 'POST') {
+        if(!$.static.rates) $.static.rates = new Map();
+
+        const ip = $.utils.extractIP($.req);
+        const r = {timestamp: Date.now(), bytes: 0};
+        if($.static.rates.has(ip)) {
+            const state = $.static.rates.get(ip);
+            if(Date.now() - state.timestamp < 60000 * 10) {
+                r.bytes = state.bytes;
+            }
+        }
+        if(r.bytes >= 655400) {
+            log(log.warn, '[PLOP] IP: ', ip, ' has hit the rate limit!');
+            return $.responseCode = 429;
+        }
+
         const buffer = await $.getBody($.req);
-        if(Buffer.byteLength(buffer) >= 1e+7) return $.responseCode = 413;
+        const bSize = Buffer.byteLength(buffer);
+        r.bytes += bSize;
+        $.static.rates.set(ip, r);
+        if(bSize >= 1e+7) return $.responseCode = 413;
         try {
             const raw = inflate(buffer);
             const magic = Buffer.from('PLOP :]\0');

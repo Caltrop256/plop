@@ -10,6 +10,7 @@ let elementInBrush;
 let paused = false;
 let categorySelected = 'brittle';
 
+let isUploading = false;
 let state = null;
 
 function setSize(n) {
@@ -132,6 +133,7 @@ const controls = [
         symbol: '\u0017',
         callback() {
             if(state) importData(state);
+            else wasm.exports.changeScene(0);
         }
     }, {
         name: 'export state',
@@ -169,6 +171,84 @@ const controls = [
             }
             inp.click();
             inp.remove();
+        }
+    }, {
+        name: 'share state',
+        symbol: '\u000b',
+        callback() {
+            if(isUploading) return;
+            isUploading = true;
+            state = exportData();
+            fetch('./plopstate.emb', {
+                headers: {
+                    'Content-Type': 'application/octet-stream',
+                    'Content-Size': state.byteLength
+                },
+                method: 'POST',
+                body: state.buffer
+            }).then(res => {
+                if(res.ok) {
+                    res.text().then(id => {
+                        history.pushState({}, '', '/plop/' + id + '/');
+
+                        const {top,left,right,bottom} = canvas.getBoundingClientRect();
+                        const scaleF = window.innerWidth < 620 ? range(window.innerWidth / 620, 0.1, 1.5) : 2;
+                        const description = new TextNode('Upload Successful', 1.8 * scaleF, new Vec2(left + (right - left) / 2, top + (bottom - top) / 2 - 60 * scaleF), 'center');
+                        renderList.push(description);
+                        const buttonWidths = 4 * scaleF + new Button('Copy Link', scaleF * 1.2, new Vec2()).width + new Button('Close', scaleF * 1.2, new Vec2()).width;
+                        const copyURLButton = new Button('Copy Link', scaleF * 1.2, new Vec2(left + (right - left) / 2 - buttonWidths / 2, top + (bottom - top) / 2 - 40 * scaleF));
+                        copyURLButton.on('mouseenter', () => {
+                            document.body.style.cursor = 'pointer';
+                        });
+                        copyURLButton.on('mouseexit', () => {
+                            document.body.style.cursor = 'default'
+                        });
+                        copyURLButton.on('mousedown', () => {
+                            const text = window.location.href;
+                            if(window.clipboardData && window.clipboardData.setData) {
+                                return window.clipboardData.setData("Text", text);
+                            } else if (document.queryCommandSupported && document.queryCommandSupported("copy")) {
+                                const textarea = document.createElement("textarea");
+                                textarea.textContent = text;
+                                textarea.style.position = "fixed";
+                                document.body.appendChild(textarea);
+                                textarea.select();
+                                try {
+                                    return document.execCommand("copy");
+                                } catch (ex) {
+                                    console.warn("Copy to clipboard failed.", ex);
+                                    return false;
+                                } finally {
+                                    document.body.removeChild(textarea);
+                                }
+                            }
+                        });
+                        renderList.push(copyURLButton);
+                        const closeButton = new Button('Close', scaleF * 1.2, new Vec2(left + (right - left) / 2 - buttonWidths / 2 + copyURLButton.width + 2 * scaleF, top + (bottom - top) / 2 - 40 * scaleF));
+                        closeButton.on('mouseenter', () => {
+                            document.body.style.cursor = 'pointer';
+                        });
+                        closeButton.on('mouseexit', () => {
+                            document.body.style.cursor = 'default'
+                        });
+                        closeButton.on('mousedown', () => {
+                            isUploading = false;
+                            renderList.splice(renderList.indexOf(description), 1);
+                            renderList.splice(renderList.indexOf(copyURLButton), 1);
+                            renderList.splice(renderList.indexOf(closeButton), 1);
+                        });
+                        renderList.push(closeButton);
+                    })
+                } else {
+                    switch(res.status) {
+                        case 400 : alert('You tried to upload an invalid File!'); break;
+                        case 429 : alert('You have hit the rate limit, please wait at least 10 minutes and try again!'); break;
+                        case 413 : alert('The file you tried to upload exceeds the file-size limit!'); break;
+                        default : alert('An Unknown Error has occured, please try again later!'); break;
+                    }
+                    isUploading = false;
+                }
+            })
         }
     }
 ]
@@ -488,25 +568,36 @@ void async function main() {
         wasm = instance;
         const seed = new Uint32Array(6);
         crypto.getRandomValues(seed);
+        wasm.exports.seed(...seed);
         readEnumArray();
         elementInBrush = lookup['SAND'].id;
         generateFavicon(catSymbols[2]);
         constructUI(renderList);
-        wasm.exports.seed(...seed);
-        setSize(4);
-        const id = location.pathname.substring(location.pathname.slice(0, -1).lastIndexOf('/') + 1).slice(0, -1);
-        if(id != 'plop') {
+        const match = location.pathname.match(/([a-zA-Z0-9_\-]{22,22})\/$/);
+        if(match) {
+            const id = match[1];
             fetch('./plopstate.emb?f=' + encodeURIComponent(id))
-            .then(res => res.arrayBuffer())
-            .then(buffer => {
-                if(buffer.byteLength) {
-                    const arr = new Uint8Array(buffer);
-                    if(importData(arr)) state = arr;
-                    paused = true;
-                };
-            });
+            .then(res => {
+                if(res.ok) {
+                    res.arrayBuffer().then(buffer => {
+                        if(buffer.byteLength) {
+                            const arr = new Uint8Array(buffer);
+                            if(importData(arr)) {
+                                state = arr;
+                                renderList[Element.getElementIndexById('control_pause')].onmousedown();
+                            } else setSize(4);
+                        } else setSize(4);
+                        loop();
+                    });
+                } else {
+                    setSize(4);
+                    loop();
+                }
+            })
+        } else {
+            setSize(4);
+            loop();
         }
-        loop();
     })
 }();
 
