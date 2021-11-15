@@ -9,6 +9,7 @@ let areaOfEffect = 3;
 let elementInBrush;
 let paused = false;
 let categorySelected = 'brittle';
+let lastSelected = 'SAND';
 
 let isUploading = false;
 let state = null;
@@ -259,7 +260,7 @@ let infoNode;
 
 window.constructUI = (renderList) => {
     resizeMenuOpen = false;
-    let lastSelected = lookup[enumToString[elementInBrush]].name || enumToString[elementInBrush];
+    lastSelected = lookup[enumToString[elementInBrush]].name || enumToString[elementInBrush];
     const {top,left,right,bottom} = canvas.getBoundingClientRect();
 
     const scaleF = Math.min(window.innerWidth) < 620 ? range(Math.min(window.innerWidth) / 620, 0.1, 1.5) : 2;

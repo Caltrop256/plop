@@ -30,9 +30,27 @@ class EventHandler {
                 }
             }
 
-            const tool = tools[e.button == 0 ? 0 : 1];
-            if(tool && !clickedOnElement && this.inCanvas()) {
-                tool.ondown(this.getCanvasCoords());
+            if(e.button == 1) {
+                const {x, y} = this.getCanvasCoords();
+                const type = wasm.exports.getType(wasm.exports.getCell(x, y));
+                if(type > lookup['EMPTY'].id && lookup[enumToString[type]].category != categories.hidden) {
+                    elementInBrush = type;
+                    const ind = Element.getElementIndexById('elementselect_' + lastSelected);
+                    if(ind != null) delete renderList[ind].clr;
+                    const catInd = Element.getElementIndexById('cat_' + categorySelected);
+                    if(catInd != null) delete renderList[catInd].clr;
+                    lastSelected = lastSelected = lookup[enumToString[elementInBrush]].name || enumToString[elementInBrush];;
+                    categorySelected = Object.getOwnPropertyNames(categories)[lookup[enumToString[type]].category];
+                    const sind = Element.getElementIndexById('elementselect_' + lastSelected);
+                    if(sind != null) renderList[sind].clr = toolColors[0];
+                    const scatInd = Element.getElementIndexById('cat_' + categorySelected);
+                    if(scatInd != null) renderList[scatInd].clr = toolColors[0];
+                }
+            } else if(e.button <= 2) {
+                const tool = tools[e.button == 0 ? 0 : 1];
+                if(tool && !clickedOnElement && this.inCanvas()) {
+                    tool.ondown(this.getCanvasCoords());
+                }
             }
         });
 
@@ -40,7 +58,7 @@ class EventHandler {
             if(this.isPhone) return;
             this.mx = e.clientX;
             this.my = e.clientY;
-            const tool = tools[e.button == 0 ? 0 : e.button == 2 ? 1 : 2];
+            const tool = tools[e.button == 0 ? 0 : 1];
             if(tool) tool.onup(this.getCanvasCoords());
         })
 
