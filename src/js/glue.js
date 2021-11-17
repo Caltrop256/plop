@@ -75,7 +75,7 @@ const controls = [
             } else {
                 resizeMenuOpen = true;
                 const {top,left,right,bottom} = canvas.getBoundingClientRect();
-                const scaleF = window.innerWidth < 620 ? range(window.innerWidth / 620, 0.1, 1.5) : 2;
+                const scaleF = Math.min(window.innerWidth) < 741 ? range(Math.min(window.innerWidth) / 741, 0.1, 1.5) : 2;
                 const description = new TextNode('Resize canvas', 1.8 * scaleF, new Vec2(left + (right - left) / 2, top + (bottom - top) / 2 - 60 * scaleF), 'center');
                 renderList.push(description);
 
@@ -193,7 +193,7 @@ const controls = [
                         history.pushState({}, '', '/plop/' + id + '/');
 
                         const {top,left,right,bottom} = canvas.getBoundingClientRect();
-                        const scaleF = window.innerWidth < 620 ? range(window.innerWidth / 620, 0.1, 1.5) : 2;
+                        const scaleF = Math.min(window.innerWidth) < 741 ? range(Math.min(window.innerWidth) / 741, 0.1, 1.5) : 2;
                         const description = new TextNode('Upload Successful', 1.8 * scaleF, new Vec2(left + (right - left) / 2, top + (bottom - top) / 2 - 60 * scaleF), 'center');
                         renderList.push(description);
                         const buttonWidths = 4 * scaleF + new Button('Copy Link', scaleF * 1.2, new Vec2()).width + new Button('Close', scaleF * 1.2, new Vec2()).width;
@@ -263,7 +263,7 @@ window.constructUI = (renderList) => {
     lastSelected = lookup[enumToString[elementInBrush]].name || enumToString[elementInBrush];
     const {top,left,right,bottom} = canvas.getBoundingClientRect();
 
-    const scaleF = Math.min(window.innerWidth) < 620 ? range(Math.min(window.innerWidth) / 620, 0.1, 1.5) : 2;
+    const scaleF = Math.min(window.innerWidth) < 741 ? range(Math.min(window.innerWidth) / 741, 0.1, 1.5) : 2;
     let catX = 8;
     for(const category in categories) {
         if(category == 'pseudo' || category == 'hidden') continue;
