@@ -121,6 +121,7 @@ class EventHandler {
 
         window.addEventListener('keydown', e => e.key.toLowerCase() == 'shift' && (this.shiftKeyPressed = true));
         window.addEventListener('keyup', e => e.key.toLowerCase() == 'shift' && (this.shiftKeyPressed = false));
+        window.addEventListener('focus', () => void (this.shiftKeyPressed = false));
 
         window.addEventListener('wheel', e => {
             renderList[Element.getElementIndexById('tool_areaOfEffect')].onmousedown({button: e.deltaY < 0 ? 0 : 2});
